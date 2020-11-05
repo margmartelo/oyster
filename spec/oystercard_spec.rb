@@ -2,7 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:station) { double :station}
-  
+
   context '#balance' do
     it 'when created has a balance of 0' do
       expect(subject.balance).to eq 0
@@ -53,7 +53,8 @@ describe Oystercard do
 
     it "will storage station when touch_in" do
       subject.top_up(20)
-      expect(subject.touch_in(station)).to eq station
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
     end
 
     it 'touching out in will change status of in_journey to false' do
