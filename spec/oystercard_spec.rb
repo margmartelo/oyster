@@ -51,27 +51,39 @@ describe Oystercard do
       expect { subject.touch_in(station) }.to raise_error "not enough balance"
     end
 
-    it "will storage station when touch_in" do
+    it "will storage station in journey_history" do
       subject.top_up(20)
       subject.touch_in(station)
-      expect(subject.entry_station).to eq station
+      subject.touch_out(station)
+      expect(subject.journey_history[0][:entry_station]).to eq(station)
     end
 
     it 'touching out in will change status of in_journey to false' do
       subject.top_up(5)
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(station)
       expect(subject).not_to be_in_journey
     end
 
     it 'will charge minimum fare deducting it from balance' do
       subject.top_up(5)
       subject.touch_in(station)
-      expect { subject.touch_out }.to change { subject.balance }.by(-Oystercard::MIN_FARE)
+      expect { subject.touch_out(station) }.to change { subject.balance }.by(-Oystercard::MIN_FARE)
+    end
+
+    it "will storage station when touch_out" do
+      subject.top_up(20)
+      subject.touch_in(station)
+      subject.touch_out(station)
+      expect(subject.journey_history[0][:exit_station]).to eq(station)
     end
 
     # it 'will raise an error if user touches out whilst not in journey' do
     #   expect { subject.touch_out }.to raise_error 'not in journey'
     # end
+
+    it "will create an empty list to storage journey history" do
+      expect(subject.journey_history).to be_empty
+    end
   end
 end
